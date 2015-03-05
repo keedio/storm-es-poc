@@ -59,7 +59,10 @@ public class KafkaParserBolt implements IBasicBolt {
     			objAux.put("item",extraData.get("item"));
     			objAux.put("hostname",extraData.get("hostname"));
     			objAux.put("delivery",extraData.get("delivery"));
-    			objAux.put("timestamp",this.transformDate(message.substring(4, 16), "MMM dd hh:mm", "yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
+			System.out.println(message);
+			int inicio = message.indexOf("keedio.datagenerator: ")+"keedio.datagenerator: ".length();
+			//System.out.println(message.substring(inicio, inicio + 19));
+    			objAux.put("timestamp",this.transformDate(message.substring(inicio, inicio + 19), "yyyy-MM-dd hh:mm:ss", "yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
     			objAux.put("vdc", extraData.get("vdc"));
     			
     		} catch (org.json.simple.parser.ParseException e) {
