@@ -72,6 +72,7 @@ public class TopologyProperties {
 		stormConfig.put(StormElasticSearchConstants.ES_CLUSTER_NAME, properties.getProperty("elasticsearch.cluster.name"));
 		stormConfig.put("elasticsearch.index", properties.getProperty("elasticsearch.index"));
 		stormConfig.put("elasticsearch.type", properties.getProperty("elasticsearch.type"));
+		stormConfig.put("other.simulated", properties.getProperty("other.simulated"));
 	}
 
 	private static int parseZkPort(String zkNodes) 

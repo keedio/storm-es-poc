@@ -27,12 +27,14 @@ public class KafkaParserBolt implements IBasicBolt {
 	private String index;
 	private String type;
 	private int i = 1000;
+	private boolean simulated = true;
 	//private String type;
 
 	@SuppressWarnings("rawtypes")
     public void prepare(Map stormConf, TopologyContext context) {
     	index = (String) stormConf.get("elasticsearch.index");
     	type = (String) stormConf.get("elasticsearch.type");
+	simulated = ((String)stormConf.get("other.simulated")).equals("true")?true:false;
     	//this.type = (String) stormConf.get("elasticsearch.type");
     }
 
@@ -57,7 +59,7 @@ public class KafkaParserBolt implements IBasicBolt {
     			objAux.put("item",extraData.get("item"));
     			objAux.put("hostname",extraData.get("hostname"));
     			objAux.put("delivery",extraData.get("delivery"));
-    			objAux.put("timestamp",transformDate(message.substring(4, 16), "MMM dd hh:mm", "yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
+    			objAux.put("timestamp",this.transformDate(message.substring(4, 16), "MMM dd hh:mm", "yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
     			objAux.put("vdc", extraData.get("vdc"));
     			
     		} catch (org.json.simple.parser.ParseException e) {
@@ -73,11 +75,12 @@ public class KafkaParserBolt implements IBasicBolt {
     }
 
     
-	private static String transformDate(String date, String originPtt, String finalPtt) {
+	private String transformDate(String date, String originPtt, String finalPtt) {
 		try {
 		SimpleDateFormat sdf1 = new SimpleDateFormat(originPtt);
 		Date date1 = sdf1.parse(date);
 		date1.setYear(new Date().getYear());
+		if (simulated) date1=new Date();
 		
 		SimpleDateFormat sdf2 = new SimpleDateFormat(finalPtt);
 		
