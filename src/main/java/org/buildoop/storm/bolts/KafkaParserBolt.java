@@ -18,7 +18,7 @@ import org.elasticsearch.common.joda.time.format.ISODateTimeFormat;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
-
+import java.util.UUID;
 import static backtype.storm.utils.Utils.tuple;
 
 @SuppressWarnings("serial")
@@ -69,7 +69,7 @@ public class KafkaParserBolt implements IBasicBolt {
     			e.printStackTrace();		
     		}
         	
-        	collector.emit(tuple("" + i++,index, (String)objAux.get("delivery"), objAux.toString()));
+        	collector.emit(tuple(String.valueOf(UUID.randomUUID()),index, (String)objAux.get("delivery"), objAux.toString()));
     	}
     	
     	
