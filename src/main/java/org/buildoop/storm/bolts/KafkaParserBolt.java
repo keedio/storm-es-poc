@@ -24,92 +24,94 @@ import static backtype.storm.utils.Utils.tuple;
 
 @SuppressWarnings("serial")
 public class KafkaParserBolt implements IBasicBolt {
-	
+
 	private String index;
 	private String type;
-	private int i = 1000;
 	private boolean simulated = true;
 	//private String type;
 	public static final Logger log = LoggerFactory
 			.getLogger(KafkaParserBolt.class);
 
 	@SuppressWarnings("rawtypes")
-    public void prepare(Map stormConf, TopologyContext context) {
-    	index = (String) stormConf.get("elasticsearch.index");
-    	type = (String) stormConf.get("elasticsearch.type");
-	simulated = ((String)stormConf.get("other.simulated")).equals("true")?true:false;
-    	//this.type = (String) stormConf.get("elasticsearch.type");
-    }
+	public void prepare(Map stormConf, TopologyContext context) {
+		index = (String) stormConf.get("elasticsearch.index");
+		type = (String) stormConf.get("elasticsearch.type");
+		simulated = ((String)stormConf.get("other.simulated")).equals("true")?true:false;
+		//this.type = (String) stormConf.get("elasticsearch.type");
+	}
 
-    public void execute(Tuple input, BasicOutputCollector collector) {
-    	String kafkaEvent = new String(input.getBinary(0));
-    	
-    	
-    	if (kafkaEvent.length()>0)
-    	{
-    		
-    		JSONObject objAux = new JSONObject();    		
-    		JSONParser parser = new JSONParser();
-    		try {
-    			Object obj = parser.parse(kafkaEvent);
-    			
-    			JSONObject jsonObject = (JSONObject) obj;
-    			String message = (String) jsonObject.get("message");
-    			JSONObject extraData = (JSONObject) jsonObject.get("extraData");
-    			objAux.put("message",message);
-    			objAux.put("ciid",extraData.get("ciid"));
-    			objAux.put("item",extraData.get("item"));
-    			objAux.put("hostname",extraData.get("hostname"));
-    			objAux.put("delivery",extraData.get("delivery"));
-			log.debug(message);
-			int inicio = message.indexOf("keedio.datagenerator: ")+"keedio.datagenerator: ".length();
-			//System.out.println(message.substring(inicio, inicio + 19));
-    			objAux.put("timestamp",this.transformDate(message.substring(inicio, inicio + 19), "yyyy-MM-dd hh:mm:ss", "yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
-    			objAux.put("vdc", extraData.get("vdc"));
-    			
-    		} catch (Exception e) {
-    			//e.printStackTrace();
-			log.debug("Erro al parsear mensaje");		
-    		}
-        	
-        	collector.emit(tuple(String.valueOf(UUID.randomUUID()),index, (String)objAux.get("delivery"), objAux.toString()));
-    	}
-    	
-    	
-    	
-		
-    }
+	public void execute(Tuple input, BasicOutputCollector collector) {
+		String kafkaEvent = new String(input.getBinary(0));
 
-    
-	private String transformDate(String date, String originPtt, String finalPtt) {
-		try {
+
+		if (kafkaEvent.length()>0)
+		{
+
+			JSONObject objAux = new JSONObject();    		
+			JSONParser parser = new JSONParser();
+			try {
+				Object obj = parser.parse(kafkaEvent);
+
+				JSONObject jsonObject = (JSONObject) obj;
+				String message = (String) jsonObject.get("message");
+				JSONObject extraData = (JSONObject) jsonObject.get("extraData");
+
+				objAux.put("message",message);
+				objAux.put("ciid",extraData.get("ciid"));
+				objAux.put("item",extraData.get("item"));
+				objAux.put("hostname",extraData.get("hostname"));
+				objAux.put("delivery",extraData.get("delivery"));
+
+				log.debug(message);
+
+				int inicio = message.indexOf("keedio.datagenerator: ")+"keedio.datagenerator: ".length();
+
+				objAux.put("timestamp",this.transformDate(message.substring(inicio, inicio + 19), "yyyy-MM-dd hh:mm:ss", "yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
+				objAux.put("vdc", extraData.get("vdc"));
+
+			} catch (org.json.simple.parser.ParseException e) {
+				//e.printStackTrace();
+				log.error("Error al parsear mensaje");		
+			} catch (ParseException e) {
+				log.error("Error al formatear la fecha. Revisar formato de mensaje");
+			}
+
+			collector.emit(tuple(String.valueOf(UUID.randomUUID()),index, (String)objAux.get("delivery"), objAux.toString()));
+		}
+
+
+
+
+	}
+
+
+	private String transformDate(String date, String originPtt, String finalPtt) throws ParseException{
+
 		SimpleDateFormat sdf1 = new SimpleDateFormat(originPtt);
 		Date date1 = sdf1.parse(date);
 		date1.setYear(new Date().getYear());
 		if (simulated) date1=new Date();
-		
+
 		SimpleDateFormat sdf2 = new SimpleDateFormat(finalPtt);
-		
+
 		return sdf2.format(date1);
-		} catch (Exception e) {
-			return "";
-		}
-		
+
+
 	}
-    
-    
+
+
 	public void cleanup() {
 
-    }
+	}
 
-    public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("id", "index", "type", "document"));
-    }
+	public void declareOutputFields(OutputFieldsDeclarer declarer) {
+		declarer.declare(new Fields("id", "index", "type", "document"));
+	}
 
-    @Override
-    public Map<String, Object> getComponentConfiguration() {
-        return null;
-    }
-    
+	@Override
+	public Map<String, Object> getComponentConfiguration() {
+		return null;
+	}
+
 
 }
