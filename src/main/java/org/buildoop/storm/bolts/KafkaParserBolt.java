@@ -6,7 +6,8 @@ import backtype.storm.topology.IBasicBolt;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -29,6 +30,8 @@ public class KafkaParserBolt implements IBasicBolt {
 	private int i = 1000;
 	private boolean simulated = true;
 	//private String type;
+	public static final Logger log = LoggerFactory
+			.getLogger(KafkaParserBolt.class);
 
 	@SuppressWarnings("rawtypes")
     public void prepare(Map stormConf, TopologyContext context) {
@@ -51,7 +54,6 @@ public class KafkaParserBolt implements IBasicBolt {
     			Object obj = parser.parse(kafkaEvent);
     			
     			JSONObject jsonObject = (JSONObject) obj;
-    			System.out.println(obj);
     			String message = (String) jsonObject.get("message");
     			JSONObject extraData = (JSONObject) jsonObject.get("extraData");
     			objAux.put("message",message);
@@ -59,14 +61,15 @@ public class KafkaParserBolt implements IBasicBolt {
     			objAux.put("item",extraData.get("item"));
     			objAux.put("hostname",extraData.get("hostname"));
     			objAux.put("delivery",extraData.get("delivery"));
-			System.out.println(message);
+			log.debug(message);
 			int inicio = message.indexOf("keedio.datagenerator: ")+"keedio.datagenerator: ".length();
 			//System.out.println(message.substring(inicio, inicio + 19));
     			objAux.put("timestamp",this.transformDate(message.substring(inicio, inicio + 19), "yyyy-MM-dd hh:mm:ss", "yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
     			objAux.put("vdc", extraData.get("vdc"));
     			
     		} catch (Exception e) {
-    			e.printStackTrace();		
+    			//e.printStackTrace();
+			log.debug("Erro al parsear mensaje");		
     		}
         	
         	collector.emit(tuple(String.valueOf(UUID.randomUUID()),index, (String)objAux.get("delivery"), objAux.toString()));
