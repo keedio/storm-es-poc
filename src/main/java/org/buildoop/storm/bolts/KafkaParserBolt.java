@@ -76,7 +76,7 @@ public class KafkaParserBolt implements IBasicBolt {
 				log.error("Error al formatear la fecha. Revisar formato de mensaje");
 			}
 
-			collector.emit(tuple(String.valueOf(UUID.randomUUID()),index, (String)objAux.get("delivery"), objAux.toString()));
+			collector.emit(tuple(String.valueOf(UUID.randomUUID()),index, (String)objAux.get("Delivery"), objAux.toString()));
 		}
 
 
