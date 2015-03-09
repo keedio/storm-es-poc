@@ -57,10 +57,14 @@ public class KafkaParserBolt implements IBasicBolt {
 				JSONObject extraData = (JSONObject) jsonObject.get("extraData");
 
 				objAux.put("message",message);
-				objAux.put("ciid",extraData.get("ciid"));
-				objAux.put("item",extraData.get("item"));
-				objAux.put("hostname",extraData.get("hostname"));
-				objAux.put("delivery",extraData.get("delivery"));
+				
+				
+				objAux.put("FunctionalEnvironment",extraData.get("FunctionalEnvironment"));
+				objAux.put("CI ID",extraData.get("CI ID"));
+				objAux.put("CI Name",extraData.get("CI Name"));
+				objAux.put("Delivery",extraData.get("Delivery"));
+				objAux.put("Company",extraData.get("Company"));
+				objAux.put("Hostname",extraData.get("Hostname"));
 
 				log.debug(message);
 
