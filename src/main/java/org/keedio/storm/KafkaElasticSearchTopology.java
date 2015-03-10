@@ -1,4 +1,4 @@
-package org.buildoop.storm;
+package org.keedio.storm;
 
 import backtype.storm.LocalCluster;
 import backtype.storm.StormSubmitter;
@@ -6,7 +6,7 @@ import backtype.storm.generated.StormTopology;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
 
-import org.buildoop.storm.bolts.KafkaParserBolt;
+import org.keedio.storm.bolts.KafkaParserBolt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +52,13 @@ public class KafkaElasticSearchTopology {
 	private StormTopology buildTopology()
 	{
 		BrokerHosts kafkaBrokerHosts = new ZkHosts(topologyProperties.getZookeeperHosts());
-		SpoutConfig kafkaConfig = new SpoutConfig(kafkaBrokerHosts, topologyProperties.getKafkaTopic(), "",	"storm");
+
+		String topologyName = topologyProperties.getTopologyName();
+
+		String kafkaTopic = topologyProperties.getKafkaTopic();
+
+		SpoutConfig kafkaConfig = new SpoutConfig(kafkaBrokerHosts, kafkaTopic, "/storm/kafka/" + topologyName, kafkaTopic);
+		
 		
 		//TODO : configurable!!
 		kafkaConfig.forceFromStart = true;
