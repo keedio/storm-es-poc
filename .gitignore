@@ -1,2 +1,10 @@
 target/
+<<<<<<< HEAD
 bin/
+=======
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+>>>>>>> 3a3726eb8ac363a042f32d1f690a4e04e8a1c356
