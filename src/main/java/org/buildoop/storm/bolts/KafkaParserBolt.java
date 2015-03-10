@@ -55,13 +55,13 @@ public class KafkaParserBolt implements IBasicBolt {
 			JSONObject objAux = new JSONObject();    		
 			JSONParser parser = new JSONParser();
 			
-			String message = "";
+			Object obj = "";
 			
 			try {
-				Object obj = parser.parse(kafkaEvent);
+				obj = parser.parse(kafkaEvent);
 
 				JSONObject jsonObject = (JSONObject) obj;
-				message = (String) jsonObject.get("message");
+				String message = (String) jsonObject.get("message");
 				JSONObject extraData = (JSONObject) jsonObject.get("extraData");
 				Iterator iter = extraData.entrySet().iterator();
 				
@@ -79,14 +79,16 @@ public class KafkaParserBolt implements IBasicBolt {
 
 				objAux.put("timestamp",this.transformDate(message.substring(inicio, inicio + 23), "yyyy-MM-dd HH:mm:ss.SSS", "yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
 
+				collector.emit(tuple(String.valueOf(UUID.randomUUID()),index, (String)objAux.get(type), objAux.toString()));
 			} catch (org.json.simple.parser.ParseException e) {
 				//e.printStackTrace();
-				log.error("Error al parsear mensaje: " + message);		
+				log.error("Error al parsear mensaje: " + obj);		
 			} catch (ParseException e) {
-				log.error("Error al formatear la fecha. Revisar formato de mensaje: " + message);
+				log.error("Error al formatear la fecha. Revisar formato de mensaje: " + obj);
+			} catch (Exception e) {
+				log.error("Formato de mensaje inesperado: " + obj);
 			}
 
-			collector.emit(tuple(String.valueOf(UUID.randomUUID()),index, (String)objAux.get(type), objAux.toString()));
 		}
 
 
