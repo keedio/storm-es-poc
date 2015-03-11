@@ -17,6 +17,7 @@ public class TopologyProperties {
 	private Config stormConfig;
 	private String zookeeperHosts;
 	private String stormExecutionMode;
+	private boolean startFromBeginnig;
 	
 	public TopologyProperties(String fileName){
 		
@@ -43,7 +44,16 @@ public class TopologyProperties {
 		topologyName = properties.getProperty("storm.topology.name","topologyName");
 		localTimeExecution = Integer.parseInt(properties.getProperty("storm.local.execution.time","20000"));
 		kafkaTopic = properties.getProperty("kafka.topic");
+		startFromBeginnig = Boolean.valueOf(properties.getProperty("kafka.startsFromBeginning"));
 		setStormConfig(properties);
+	}
+
+	public boolean getStartFromBeginnig() {
+		return startFromBeginnig;
+	}
+
+	public void setStartFromBeginnig(boolean startFromBeginnig) {
+		this.startFromBeginnig = startFromBeginnig;
 	}
 
 	private void setStormConfig(Properties properties)

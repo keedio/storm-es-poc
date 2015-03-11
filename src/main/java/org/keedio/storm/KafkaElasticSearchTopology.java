@@ -60,8 +60,7 @@ public class KafkaElasticSearchTopology {
 		SpoutConfig kafkaConfig = new SpoutConfig(kafkaBrokerHosts, kafkaTopic, "/storm/kafka/" + topologyName, kafkaTopic);
 		
 		
-		//TODO : configurable!!
-		kafkaConfig.forceFromStart = true;
+		kafkaConfig.forceFromStart = topologyProperties.getStartFromBeginnig();
 		
 		TopologyBuilder builder = new TopologyBuilder();
 		// Elastic search bolt
