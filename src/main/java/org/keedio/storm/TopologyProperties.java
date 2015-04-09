@@ -1,16 +1,13 @@
 package org.keedio.storm;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import org.keedio.storm.bolts.KafkaParserBolt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.hmsonline.storm.elasticsearch.StormElasticSearchConstants;
-
 import backtype.storm.Config;
 
 public class TopologyProperties {
@@ -36,7 +33,7 @@ public class TopologyProperties {
 		}
 	}
 	
-	private Properties readPropertiesFile(String fileName) throws Exception{
+	private Properties readPropertiesFile(String fileName) throws IOException {
 		Properties properties = new Properties();
 		FileInputStream in = new FileInputStream(fileName);
 		properties.load(in);
@@ -44,7 +41,7 @@ public class TopologyProperties {
 		return properties;		
 	}
 	
-	private void setProperties(String fileName) throws Exception{
+	private void setProperties(String fileName) throws IOException {
 		
 		Properties properties = readPropertiesFile(fileName);
 		topologyName = properties.getProperty("storm.topology.name","topologyName");
@@ -84,7 +81,7 @@ public class TopologyProperties {
 		stormConfig.put(Config.STORM_ZOOKEEPER_SERVERS, parseZkHosts(zookeeperHosts));
 		// Elastic Search specific properties
 		stormConfig.put(StormElasticSearchConstants.ES_HOST, properties.getProperty("elasticsearch.host", "localhost"));
-		stormConfig.put(StormElasticSearchConstants.ES_PORT, (Integer.parseInt(properties.getProperty("elasticsearch.port", "9300"))));
+		stormConfig.put(StormElasticSearchConstants.ES_PORT, Integer.parseInt(properties.getProperty("elasticsearch.port", "9300")));
 		stormConfig.put(StormElasticSearchConstants.ES_CLUSTER_NAME, properties.getProperty("elasticsearch.cluster.name"));
 		stormConfig.put("elasticsearch.index", properties.getProperty("elasticsearch.index"));
 		stormConfig.put("elasticsearch.type", properties.getProperty("elasticsearch.type"));
@@ -94,8 +91,7 @@ public class TopologyProperties {
 	private static int parseZkPort(String zkNodes) 
 	{
 		String[] hostsAndPorts = zkNodes.split(",");
-		int port = Integer.parseInt(hostsAndPorts[0].split(":")[1]);
-		return port;
+		return  Integer.parseInt(hostsAndPorts[0].split(":")[1]);
 	}
 	
 	private static List<String> parseZkHosts(String zkNodes) {

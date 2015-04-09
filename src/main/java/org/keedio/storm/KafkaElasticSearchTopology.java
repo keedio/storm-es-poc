@@ -7,23 +7,16 @@ import backtype.storm.generated.InvalidTopologyException;
 import backtype.storm.generated.StormTopology;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
-
 import org.keedio.storm.bolts.KafkaParserBolt;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import storm.kafka.BrokerHosts;
 import storm.kafka.KafkaSpout;
 import storm.kafka.SpoutConfig;
 import storm.kafka.ZkHosts;
-
 import com.hmsonline.storm.contrib.bolt.elasticsearch.ElasticSearchBolt;
 import com.hmsonline.storm.contrib.bolt.elasticsearch.mapper.DefaultTupleMapper;
 import com.hmsonline.storm.contrib.bolt.elasticsearch.mapper.TupleMapper;
 
 public class KafkaElasticSearchTopology {
-	private static final Logger LOG = LoggerFactory
-			.getLogger(KafkaElasticSearchTopology.class);
 
 	private final TopologyProperties topologyProperties;
 
