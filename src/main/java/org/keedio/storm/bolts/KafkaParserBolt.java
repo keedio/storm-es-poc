@@ -33,18 +33,17 @@ public class KafkaParserBolt implements IBasicBolt {
 	private String index;
 	private String type;
 	private boolean simulated = true;
-	//private String type;
-	public static final Logger log = LoggerFactory
+	private static final Logger log = LoggerFactory
 			.getLogger(KafkaParserBolt.class);
 
-	@SuppressWarnings("rawtypes")
+	@Override
 	public void prepare(Map stormConf, TopologyContext context) {
 		index = (String) stormConf.get("elasticsearch.index");
 		type = (String) stormConf.get("elasticsearch.type");
 		simulated = ((String)stormConf.get("other.simulated")).equals("true")?true:false;
-		//this.type = (String) stormConf.get("elasticsearch.type");
 	}
 
+	@Override
 	public void execute(Tuple input, BasicOutputCollector collector) {
 		String kafkaEvent = new String(input.getBinary(0));
 
@@ -79,7 +78,6 @@ public class KafkaParserBolt implements IBasicBolt {
 
 				collector.emit(tuple(String.valueOf(UUID.randomUUID()),index, (String)objAux.get(type), objAux.toString()));
 			} catch (org.json.simple.parser.ParseException e) {
-				//e.printStackTrace();
 				log.error("Error al parsear mensaje: " + kafkaEvent);		
 			} catch (ParseException e) {
 				log.error("Error al formatear la fecha. Revisar formato de mensaje: " + kafkaEvent);
@@ -111,7 +109,7 @@ public class KafkaParserBolt implements IBasicBolt {
 
 
 	public void cleanup() {
-
+		// Nothing to do 
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {

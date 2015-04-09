@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.keedio.storm.bolts.KafkaParserBolt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.hmsonline.storm.elasticsearch.StormElasticSearchConstants;
 
 import backtype.storm.Config;
@@ -18,6 +22,8 @@ public class TopologyProperties {
 	private String zookeeperHosts;
 	private String stormExecutionMode;
 	private boolean startFromBeginnig;
+	public static final Logger log = LoggerFactory
+			.getLogger(TopologyProperties.class);
 	
 	public TopologyProperties(String fileName){
 		
@@ -26,7 +32,7 @@ public class TopologyProperties {
 		try {
 			setProperties(fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 	}
 	

@@ -2,6 +2,8 @@ package org.keedio.storm;
 
 import backtype.storm.LocalCluster;
 import backtype.storm.StormSubmitter;
+import backtype.storm.generated.AlreadyAliveException;
+import backtype.storm.generated.InvalidTopologyException;
 import backtype.storm.generated.StormTopology;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
@@ -20,7 +22,7 @@ import com.hmsonline.storm.contrib.bolt.elasticsearch.mapper.DefaultTupleMapper;
 import com.hmsonline.storm.contrib.bolt.elasticsearch.mapper.TupleMapper;
 
 public class KafkaElasticSearchTopology {
-	public static final Logger LOG = LoggerFactory
+	private static final Logger LOG = LoggerFactory
 			.getLogger(KafkaElasticSearchTopology.class);
 
 	private final TopologyProperties topologyProperties;
@@ -29,16 +31,16 @@ public class KafkaElasticSearchTopology {
 		this.topologyProperties = topologyProperties;
 	}
 	
-	public void runTopology() throws Exception{
+	public void runTopology() throws AlreadyAliveException, InvalidTopologyException, InterruptedException {
 
 		StormTopology stormTopology = buildTopology();
 		String stormExecutionMode = topologyProperties.getStormExecutionMode();
 	
 		switch (stormExecutionMode){
-			case ("cluster"):
+			case "cluster":
 				StormSubmitter.submitTopology(topologyProperties.getTopologyName(), topologyProperties.getStormConfig(), stormTopology);
 				break;
-			case ("local"):
+			case "local":
 			default:
 				LocalCluster cluster = new LocalCluster();
 				cluster.submitTopology(topologyProperties.getTopologyName(), topologyProperties.getStormConfig(), stormTopology);
