@@ -13,11 +13,24 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>storm-kafka-es-topology-POC</artifactId>
 
+	<distributionManagement>
+    		<repository>
+        		<id>keedio-releases</id>
+        		<name>Keedio Releases</name>
+        		<url>http://jenkins.keedio.com:8081/nexus/content/repositories/releases/</url>
+    		</repository>
+    		<snapshotRepository>
+        		<id>keedio-snapshots</id>
+        		<name>Keedio Snapshots</name>
+        		<url>http://jenkins.keedio.com:8081/nexus/content/repositories/snapshots/</url>
+    		</snapshotRepository>
+	</distributionManagement>
+
     <dependencies>
         <dependency>
-      		<groupId>org.buildoop.storm</groupId>
-      		<artifactId>storm-elastic-search</artifactId>
-      		<version>0.1.2</version>
+      		<groupId>org.keedio.storm</groupId>
+      		<artifactId>storm-elasticsearch</artifactId>
+      		<version>0.1.4</version>
     	</dependency>
 		<dependency>
 			<groupId>org.apache.storm</groupId>
